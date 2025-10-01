@@ -401,6 +401,26 @@ function updateSafetyResults(assessment) {
             colorClass = 'safety-safe';
             explanationText = 'Your behavior patterns are within normal social ranges. You appear to have healthy social interaction patterns.';
             break;
+        case 'extroverted':
+            safetyText = '✅ EXTROVERTED';
+            colorClass = 'safety-safe';
+            explanationText = 'Your behavior patterns show high-energy social behaviors that create dynamic interactions. You are safe for social interaction.';
+            break;
+        case 'introverted':
+            safetyText = '✅ INTROVERTED';
+            colorClass = 'safety-safe';
+            explanationText = 'Your behavior patterns show thoughtful social behaviors that foster deep connections. You are safe for social interaction.';
+            break;
+        case 'socially_anxious':
+            safetyText = '⚠️ SOCIALLY ANXIOUS';
+            colorClass = 'safety-caution';
+            explanationText = 'Your behavior patterns show anxious social patterns that may limit social opportunities but are not harmful to others.';
+            break;
+        case 'dominant':
+            safetyText = '⚠️ DOMINANT';
+            colorClass = 'safety-caution';
+            explanationText = 'Your behavior patterns show assertive behaviors that can be positive or overwhelming depending on context.';
+            break;
         case 'caution':
             safetyText = '⚠️ CAUTION';
             colorClass = 'safety-caution';
