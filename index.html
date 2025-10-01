@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Interaction Safety Assessment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            color: white;
+            max-width: 400px;
+            min-width: 350px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            backdrop-filter: blur(5px);
+            font-size: 1em;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .input-group input::placeholder, .input-group textarea::placeholder {
+            color: #666;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 16px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-shadow: none;
+            margin: 8px 0;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c8ef0, #8a5bb8);
+            color: white !important;
+        }
+        
+        .results {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            color: white;
+            max-width: 350px;
+            min-height: 100px;
+        }
+        
+        .safety-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .safety-safe { color: #4CAF50; }
+        .safety-caution { color: #FF9800; }
+        .safety-warning { color: #F44336; }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+        
+        .point:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+        
+        .point-safe { background: #4CAF50; }
+        .point-normal { background: #2196F3; }
+        .point-caution { background: #FF9800; }
+        .point-warning { background: #F44336; }
+        .point-user { background: #9C27B0; border: 2px solid white; }
+        
+        .popup {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            color: #333;
+            max-width: 300px;
+            z-index: 1000;
+            transform: translate(-50%, -100%);
+            margin-top: -15px;
+            display: none;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transition: opacity 0.2s ease;
+        }
+        
+        .popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .popup-header {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .popup-category {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .popup-category.safe { background: #4CAF50; color: white; }
+        .popup-category.normal { background: #2196F3; color: white; }
+        .popup-category.extroverted { background: #FF5722; color: white; }
+        .popup-category.introverted { background: #3F51B5; color: white; }
+        .popup-category.socially_anxious { background: #9C27B0; color: white; }
+        .popup-category.dominant { background: #795548; color: white; }
+        .popup-category.caution { background: #FF9800; color: white; }
+        .popup-category.warning { background: #F44336; color: white; }
+        .popup-category.user { background: #E91E63; color: white; }
+        
+        .popup-behavior {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .popup-rating {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .popup-score {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .popup-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .popup-social-media {
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 8px;
+            border-left: 4px solid #1DA1F2;
+        }
+        
+        .social-media-header {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #1DA1F2;
+            margin-bottom: 8px;
+        }
+        
+        .social-media-post {
+            font-style: italic;
+            color: #444;
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Social Interaction Safety Assessment</h1>
+            <p>AI-powered embedding analysis for social compatibility</p>
+        </div>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label for="userInput">Describe yourself or your behavior:</label>
+                <textarea id="userInput" rows="3" placeholder="e.g., I enjoy quiet conversations and prefer small groups..."></textarea>
+            </div>
+            <button class="btn btn-primary" id="analyzeBtn">🔍 Analyze Social Safety</button>
+            <button class="btn" id="generateDataBtn">⚡ Generate Baseline Data</button>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="visualCanvas"></canvas>
+            <div id="loading" class="loading" style="display: none;">
+                Analyzing social patterns...
+            </div>
+            <div id="popup" class="popup">
+                <div class="popup-header">Behavior Details</div>
+                <div id="popup-category" class="popup-category"></div>
+                <div id="popup-behavior" class="popup-behavior"></div>
+                <div id="popup-social-media" class="popup-social-media">
+                    <div class="social-media-header">📱 Social Media Example:</div>
+                    <div id="popup-social-post" class="social-media-post"></div>
+                </div>
+                <div id="popup-rating" class="popup-rating">
+                    <div class="popup-score">Sociality Score: <span id="popup-score"></span>/10</div>
+                    <div id="popup-description" class="popup-description"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <div id="safetyScore" class="safety-score">Ready to analyze</div>
+            <div id="safetyExplanation">Enter a description above and click "Analyze Social Safety" to get started.</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
