@@ -333,8 +333,16 @@ function cosineSimilarity(vecA, vecB) {
 
 // Calculate safety score based on proximity to different categories
 function calculateSafetyScore(userCoords, userEmbedding) {
-    const scores = { safe: 0, normal: 0, caution: 0, warning: 0 };
-    const similarities = { safe: [], normal: [], caution: [], warning: [] };
+    // Get all unique categories from the baseline data
+    const categories = [...new Set(baselineData.labels)];
+    
+    // Initialize scores and similarities objects dynamically
+    const scores = {};
+    const similarities = {};
+    categories.forEach(category => {
+        scores[category] = 0;
+        similarities[category] = [];
+    });
     
     // Calculate similarities to each baseline behavior
     baselineData.labels.forEach((label, i) => {
